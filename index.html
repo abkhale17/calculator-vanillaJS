@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Abacus</title>
+	<meta charset="utf-8">
+	<!-- <link rel="stylesheet" type="text/css" href="./main.css"> -->
+<!-- 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+STYLES HERE
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+<style type="text/css">
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+ HTML5 display-role reset for older browsers 
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol, ul {
+  list-style: none;
+}
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  
+}
+
+/*
+  ========================================
+  Custom styles
+  ========================================
+*/
+html{
+  line-height: 1.3;
+  font-size: 175%;
+  font-weight: 400;
+}
+body {
+  background: #404040;
+  color: #fff;
+  font: 300 16px/22px "Lato",  "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+.container {
+  max-width: 35em;
+}
+
+.calculator {
+  border-radius: 12px;
+  box-shadow: 0 0 40px 0px rgba(0, 0, 0, 0.4);
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2em;
+  max-width: 30em;
+  overflow: hidden;
+}
+.calculator-display {
+  background-color: #222222;
+  color: #05fd2f;
+  font-size: 1.714285714em;
+  padding: 1.50em 1em;
+  text-align: right;
+}
+.calculator-keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background-color: black;
+}
+.colspan {
+ grid-column: 1 / span 2;
+}
+.rowspan_add {
+  grid-column-start: 4;
+  grid-row: 2 / span 2;
+}
+.rowspan_equal {
+  grid-column-start: 4;
+  grid-row: 4 / span 2;
+}
+.calculator-keys > * {
+  background-color: #4d6fff;;;
+  padding: 2em 2em;
+  position: relative;
+  text-align: center;
+  margin: 0.4em;
+  border-radius: 12px;
+}
+button {
+  border-style: none;
+
+}
+
+button:hover{
+  color: #05fd2f;
+  background-color:#3b3904d9;
+
+}
+
+.buttons {
+  /*transform: scale(1.1);*/
+  border-color: #ffc600;
+  box-shadow: 0 0 1rem #ffc600;
+  color: #05fd2f;
+  background-color: #222222;
+}
+
+.pressed {
+  background-color:#3b3904d9;
+}
+</style>
+
+
+<!-- 
++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++ 
+-->
+</head>
+<body>
+	<div class="container">
+		<div class="calculator">
+			<div class="calculator-display">0</div>
+
+			<div class="calculator-keys">
+				<button data-key='8'  class="buttons">AC</button>
+				<button data-key='111'  data-action="divide"  class="buttons">/</button>
+				<button data-key='106'  class="key--operator buttons" >&#10799</button>
+				<button data-key='109' class="key--operator buttons" style="font-weight: bold;">-</button>
+				<button data-key='103' class="buttons">7</button>
+				<button data-key='104' class="buttons">8</button>
+				<button data-key='105' class="buttons">9</button>
+				<button data-key='100' class="buttons">4</button>
+				<button data-key='107' class="rowspan_add buttons" >+</button>
+				<button data-key='101'  class="buttons">5</button>
+				<button data-key='102'  class="buttons">6</button>
+				
+				<button data-key='97'  class="buttons">1</button>
+				<button data-key='98'  class="buttons">2</button>
+				<button data-key='99'  class="buttons">3</button>
+				<button data-key='13'  class="rowspan_equal buttons">=</button >
+				<button data-key='96'  class="colspan buttons">0</button>
+				<button data-key='110' class="buttons">.</button>				
+			</div>
+		</div>
+	</div>
+<!-- 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+js script here
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+<script type="text/javascript">
+var s=[];
+var temp='';
+var display_val='';
+var calculator_display=document.querySelector('.calculator-display');
+var idx;
+var result;
+var index;
+var result2;
+var res;
+var t;
+var cut_negative_sign;
+var cut_positive_sign;
+var cut_negative_sign2;
+var cut_positive_sign2;
+var Ans=[];
+function add (a,b) {
+	return a+b;
+}
+
+function subtract (a,b) {
+	return a-b;
+}
+
+function multiply (a,b) {
+	return a*b
+}
+
+function divide (a,b) {
+	// return a/b;
+	var integer=`${parseInt(a/b)}`
+	var num= `${a/b}`;
+	if (integer.length!=num.length){
+		num=a/b
+		return  num.toFixed(3)
+	}
+	else{
+		return parseFloat(a/b)
+	}
+
+	// return parseFloat(num).toPrecision(6)
+}
+
+function operate (op,a,b){
+
+	if(op=='+')		return add(a,b);
+	if(op=='-')		return subtract(a,b);
+	if(op=='⨯')		return multiply(a,b);
+	if(op=='/')		return divide(a,b);
+}
+
+
+// =============================================
+
+function display(numClicked){
+	if(display_val.length>15)	{display_val='';
+		s=[];return}
+	display_val+=numClicked;
+	calculator_display.innerHTML=display_val;
+	if ((numClicked=='+')|| (numClicked=='-')|| (numClicked=='⨯')|| (numClicked=='/')){
+		if(temp.length!=0){
+			s.push(temp)
+		}
+		s.push(numClicked);
+		temp='';
+	}
+	else
+		temp+=numClicked;
+};
+
+// =============================================
+
+function calculations(s){
+   	console.log(s)
+	if (s.length=='0')	return;
+	if (s.length=='1'){
+
+		display_val=s[0];
+		console.log(display_val);
+		calculator_display.innerHTML=display_val;
+		return;
+	}
+
+	if ((s[0]=='/') || (s[0]=='⨯')){
+		display_val='Syntax ERROR';
+		calculator_display.innerHTML=display_val;
+		display_val='';
+		s=[];
+		console.log(s);
+		console.log('ok')
+		return;
+	}
+
+	if (s[0]=='-'){
+		t=s[0]+s[1];
+		s.splice(0,2,t);
+	}
+	if (s[0]=='+'){
+		s.splice(0,1)
+	}
+
+	if (s.includes('/')){
+		console.log('1')
+		idx=s.indexOf('/');
+		if (((idx+1) < s.length) && s[idx+1]=='0'){
+			
+			display_val="Math ERROR";
+			calculator_display.innerHTML=display_val;
+			display_val='';
+			for (var i = 0; i < s.length; i++) {
+				s.pop()
+			}
+			s=[]
+			console.log(s)
+			return;
+		}
+		if (((idx+2) < s.length) && s[idx+1]=='-'){
+			cut_negative_sign=s[idx+1]+s[idx+2];
+			s.splice(idx+1,2,cut_negative_sign);
+		}
+		if (((idx+2) < s.length) && s[idx+1]=='+'){
+			cut_positive_sign=s[idx+1]+s[idx+2];
+			s.splice(idx+1,2,cut_positive_sign);
+		}
+		result=operate('/',parseFloat(s[idx-1]),parseFloat(s[idx+1]));
+		s.splice(idx-1,3,`${result}`);
+		calculations(s);
+	}
+	if (s.includes('⨯')){
+		index=s.indexOf('⨯');
+		if (((index+2) < s.length) && s[index+1]=='-'){
+			cut_negative_sign2=s[index+1]+s[index+2];
+			s.splice(index+1,2,cut_negative_sign2);
+		}
+		if (((index+2) < s.length) && s[index+1]=='+'){
+			cut_positive_sign2=s[index+1]+s[index+2];
+			s.splice(index+1,2,cut_positive_sign2);
+		}
+		result2=operate('⨯',parseFloat(s[index-1]),parseFloat(s[index+1]));
+		s.splice(index-1,3,`${result2}`);
+		calculations(s);
+	}
+	if (s.length>2){
+
+		res=operate(s[1],parseFloat(s[0]),parseFloat(s[2]));
+		s.splice(0,3,`${res}`);
+	}
+	calculations(s);
+
+}
+
+// =============================================
+
+
+function operations(event){
+	var target=event.target;
+	if(target.tagName!='BUTTON')	return;
+	var numClicked=target.innerHTML;
+
+	if (numClicked=='='){
+		if(s.length>=1){
+			if(s[0]=='⨯' || s[0]=='/'){
+				display_val='Syntax ERROR';
+				calculator_display.innerHTML=display_val;
+				display_val='';
+				temp='';
+				s=[];
+				return;
+			}
+			
+		}
+
+		if (temp.length!=0){
+			s.push(temp);
+			temp='';
+		}
+		else{
+			s.splice(-1,1);
+		}
+		calculations(s);
+		console.log(s);
+		console.log("over")
+		Ans[0]=s.pop();
+		console.log(Ans)
+		display_val='';
+	}
+	else if (numClicked=='Del'){
+		if(s.length=='0')		return;
+		if ((s[0]=='0')	&& s.length==1) return;
+		if (s[s.length-1].length==1){
+			display_val=display_val.slice(0,display_val.length-1)
+			s.pop();
+			calculator_display.innerHTML=display_val;
+			return
+		}
+		if (s[s.length-1].length>1){
+			s[s.length-1]=s[s.length-1].slice(0,s[s.length-1].length-1);
+			display_val=display_val.slice(0,display_val.length-1);
+			calculator_display.innerHTML=display_val;
+			return;
+		}
+
+
+	}
+	else if (numClicked=='AC'){
+		s=[];
+		temp='';
+		display_val='0';
+		calculator_display.innerHTML=display_val;
+		display_val=''
+		return;
+	}
+
+	else{
+		display(numClicked);
+	}
+}
+
+document.addEventListener('click',operations);
+
+window.addEventListener("keydown",function(e){
+	const key=e.key;
+	const keystyle=document.querySelector(`button[data-key="${e.keyCode}"`)
+	keystyle.classList.add('pressed')
+
+	// let audio=document.querySelector('audio');
+	// 	if(!audio)	return
+	// 	audio.currentTime=0;
+	// 	audio.play();
+	// 	console.log('no');
+
+	// setTimeout(function(){
+	// 	keystyle.classList.remove("pressed");
+	// },300);
+
+	if ((key >= '0' && key <= '9') || (key == '+' || key == '-' || key == '/')  ){ 
+		display(key)
+	}
+	if (key == '*'){
+		display('⨯')
+	}
+	if ( key=='='|| key=='Enter'){
+		if (temp.length!=0){
+			s.push(temp);
+			temp='';
+		}
+		else{
+			s.splice(-1,1);
+		}
+		calculations(s);
+		console.log(s);
+		console.log("over")
+		Ans[0]=s.pop();
+		console.log(Ans)
+		display_val='';
+		calculations(s)
+	}
+	if (key=='Backspace'){
+		s=[];
+		temp='';
+		display_val='0';
+		calculator_display.innerHTML=display_val;
+		return;
+	}
+
+});
+</script>
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<!-- 	<script type="text/javascript" src="./script.js"></script> -->
+</body>
+</html>
